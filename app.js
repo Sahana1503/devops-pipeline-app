@@ -1,12 +1,32 @@
-const express = require('express');
+const express = require("express");
+const path = require("path");
+
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.get('/', (req, res) => {
-  res.send('<h1>DevOps CI/CD Pipeline Demo</h1><p>Deployed using Jenkins and Docker!</p>');
+// Optional DevOps environment variables
+const BUILD_NUMBER = process.env.BUILD_NUMBER || "local";
+const NODE_ENV = process.env.NODE_ENV || "development";
+
+// Serve STATIC files inside /views folder (CSS, images, etc.)
+app.use(express.static(path.join(__dirname, "views")));
+
+// Serve index.html from /views
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "index.html"));
 });
 
-app.listen(port, () => {
-  console.log(`App is running at http://localhost:${port}`);
+// Optional API endpoint
+app.get("/info", (req, res) => {
+  res.json({
+    message: "DevOps CI/CD Pipeline Demo",
+    buildNumber: BUILD_NUMBER,
+    environment: NODE_ENV,
+    port: PORT,
+  });
 });
 
+// Start the server
+app.listen(PORT, () => {
+  console.log("App is running inside container on port " + PORT);
+});
